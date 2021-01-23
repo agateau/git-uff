@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright 2021 Aurélien Gâteau <mail@agateau.com>
+# SPDX-License-Identifier: Apache-2.0
 """
 Prints the forge url for a given file or path of a Git repository checkout.
 """

@@ -2,7 +2,7 @@
 # Copyright 2021 Aurélien Gâteau <mail@agateau.com>
 # SPDX-License-Identifier: Apache-2.0
 """
-Prints the forge url for a given file or path of a Git repository checkout.
+Prints the forge URL for a given file or path of a Git repository checkout.
 """
 import argparse
 import sys
@@ -50,14 +50,14 @@ def find_converter(repo) -> (Converter, str):
             for converter in CONVERTERS:
                 if converter.match(url):
                     return converter, url
-    raise ToolError("Don't know how to get an url for this repository")
+    raise ToolError("Don't know how to get an URL for this repository")
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.description = __doc__
 
-    parser.add_argument("path", help="File for which we want the url")
+    parser.add_argument("path", help="File for which we want the URL")
     parser.add_argument("-l", "--line", type=int, help="Line to point to")
 
     args = parser.parse_args()

@@ -15,14 +15,6 @@ from git import Repo
 
 
 class Converter:
-    def match(self, url: str) -> bool:
-        return False
-
-    def run(self, repo: Repo, path: Path, line: int = None) -> str:
-        return ""
-
-
-class BasicConverter(Converter):
     # Can contain {base_url}, {project}, {branch}, {escaped_branch}, {path}
     TEMPLATE = ""
     # Can contain {line}
@@ -31,16 +23,18 @@ class BasicConverter(Converter):
     def __init__(self, base_url):
         self.base_url = base_url
 
-    def match(self, url: str) -> bool:
-        return self.base_url in url
+    def match(self, remote_url: str) -> bool:
+        """Returns true if this remote URL matches this converter"""
+        return self.base_url in remote_url
 
-    def run(self, repo: Repo, remote_url: str, path: Path, line: int = None) -> str:
+    def run(self, remote_url: str, branch: str, path: Path, line: int = None) -> str:
+        """Returns the URL for the specified path"""
         dct = {
             "base_url": self.base_url,
             "project": self.get_project(remote_url),
-            "branch": repo.active_branch.name,
+            "branch": branch,
             "path": path,
-            "escaped_branch": quote_plus(repo.active_branch.name),
+            "escaped_branch": quote_plus(branch),
         }
 
         url = self.TEMPLATE.format(**dct)
@@ -56,17 +50,17 @@ class BasicConverter(Converter):
         return project.replace(".git", "")
 
 
-class GitHubLabConverter(BasicConverter):
+class GitHubLabConverter(Converter):
     TEMPLATE = "https://{base_url}/{project}/blob/{branch}/{path}"
     LINE_SUFFIX = "#L{line}"
 
 
-class SourceHutConverter(BasicConverter):
+class SourceHutConverter(Converter):
     TEMPLATE = "https://{base_url}/{project}/tree/{branch}/{path}"
     LINE_SUFFIX = "#L{line}"
 
 
-class CGitConverter(BasicConverter):
+class CGitConverter(Converter):
     TEMPLATE = "https://{base_url}/{project}/tree/{path}?h={escaped_branch}"
     LINE_SUFFIX = "#n{line}"
 
@@ -120,7 +114,8 @@ def main():
         repo_root = get_repo_root(path)
         repo = Repo(repo_root)
         converter, remote_url = find_converter(repo)
-        url = converter.run(repo, remote_url, path.relative_to(repo_root), args.line)
+        url = converter.run(remote_url, repo.active_branch.name,
+                            path.relative_to(repo_root), args.line)
 
         print(url)
     except ToolError as e:

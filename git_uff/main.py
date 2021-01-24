@@ -74,7 +74,7 @@ def main():
         path = Path(args.path).resolve(strict=True)
     except FileNotFoundError:
         print(f"{path} does not exist")
-        return 1
+        sys.exit(1)
 
     try:
         repo_root = get_repo_root(path)
@@ -87,10 +87,8 @@ def main():
         print(url)
     except ToolError as e:
         print(e)
-        return 1
-
-    return 0
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

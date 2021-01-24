@@ -5,76 +5,34 @@
 Prints the forge url for a given file or path of a Git repository checkout.
 """
 import argparse
-import re
 import sys
 
-from urllib.parse import quote_plus
 from pathlib import Path
 
 from git import Repo
 
-
-class Converter:
-    # Can contain {base_url}, {project}, {branch}, {escaped_branch}, {path}
-    TEMPLATE = ""
-    # Can contain {line}
-    LINE_SUFFIX = None
-
-    def __init__(self, base_url):
-        self.base_url = base_url
-
-    def match(self, remote_url: str) -> bool:
-        """Returns true if this remote URL matches this converter"""
-        return self.base_url in remote_url
-
-    def run(self, remote_url: str, branch: str, path: Path, line: int = None) -> str:
-        """Returns the URL for the specified path"""
-        dct = {
-            "base_url": self.base_url,
-            "project": self.get_project(remote_url),
-            "branch": branch,
-            "path": path,
-            "escaped_branch": quote_plus(branch),
-        }
-
-        url = self.TEMPLATE.format(**dct)
-        if line is not None and self.LINE_SUFFIX is not None:
-            url += self.LINE_SUFFIX.format(line=line)
-        return url
-
-    def get_project(self, remote_url: str) -> str:
-        """Takes an URL of the form "https://{base_url}/foo/bar.git" or
-        "git@{base_url}:foo/bar.git" and returns "foo/bar".
-        """
-        _, project = re.split(re.escape(self.base_url) + "[:/]", remote_url)
-        return project.replace(".git", "")
-
-
-class GitHubLabConverter(Converter):
-    TEMPLATE = "https://{base_url}/{project}/blob/{branch}/{path}"
-    LINE_SUFFIX = "#L{line}"
-
-
-class SourceHutConverter(Converter):
-    TEMPLATE = "https://{base_url}/{project}/tree/{branch}/{path}"
-    LINE_SUFFIX = "#L{line}"
-
-
-class CGitConverter(Converter):
-    TEMPLATE = "https://{base_url}/{project}/tree/{path}?h={escaped_branch}"
-    LINE_SUFFIX = "#n{line}"
+from git_uff import converters
+from git_uff.converters import Converter
 
 
 class ToolError(Exception):
     pass
 
 
-CONVERTERS = (
-    GitHubLabConverter("github.com"),
-    GitHubLabConverter("invent.kde.org"),
-    SourceHutConverter("git.sr.ht"),
-    CGitConverter("git.zx2c4.com"),
-)
+CONVERTERS = []
+
+
+def add_converter(converter_name, url):
+    converter_class = getattr(converters, f"{converter_name}Converter")
+    converter = converter_class(url)
+    CONVERTERS.append(converter)
+
+
+def load_config():
+    add_converter("GitHub", "github.com")
+    add_converter("GitLab", "invent.kde.org")
+    add_converter("SourceHut", "git.sr.ht")
+    add_converter("CGit", "git.zx2c4.com")
 
 
 def get_repo_root(path: Path) -> Path:
@@ -103,6 +61,8 @@ def main():
     parser.add_argument("-l", "--line", type=int, help="Line to point to")
 
     args = parser.parse_args()
+
+    load_config()
 
     try:
         path = Path(args.path).resolve(strict=True)

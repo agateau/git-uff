@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "git-uff"
-version = "0.1.0"
+version = "0.2.0"
 description = "Prints the forge url for a given file of a Git repository checkout"
 readme = "README.md"
 authors = ["Aurélien Gâteau <mail@agateau.com>"]

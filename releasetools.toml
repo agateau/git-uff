@@ -1,0 +1,6 @@
+[version]
+file="pyproject.toml"
+pattern="^version = \"(.*)\"$"
+
+[changelog]
+git_log_options="-q"

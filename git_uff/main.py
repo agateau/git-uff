@@ -49,6 +49,9 @@ class BasicConverter(Converter):
         return url
 
     def get_project(self, remote_url: str) -> str:
+        """Takes an URL of the form "https://{base_url}/foo/bar.git" or
+        "git@{base_url}:foo/bar.git" and returns "foo/bar".
+        """
         _, project = re.split(re.escape(self.base_url) + "[:/]", remote_url)
         return project.replace(".git", "")
 

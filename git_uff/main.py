@@ -73,7 +73,7 @@ def main():
     try:
         path = Path(args.path).resolve(strict=True)
     except FileNotFoundError:
-        print(f"{path} does not exist")
+        print(f"File '{args.path}' does not exist")
         sys.exit(1)
 
     try:

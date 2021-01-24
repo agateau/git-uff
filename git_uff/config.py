@@ -1,8 +1,11 @@
 # Copyright 2021 Aurélien Gâteau <mail@agateau.com>
 # SPDX-License-Identifier: Apache-2.0
 from configparser import NoOptionError
+from typing import Tuple, List, Iterator
 
-from git_uff.converters import get_converter_classes_dict
+from git import Repo
+
+from git_uff.converters import Converter, get_converter_classes_dict
 
 
 DEFAULT_FORGES = (
@@ -14,7 +17,7 @@ DEFAULT_FORGES = (
 )
 
 
-def read_git_config(repo):
+def read_git_config(repo: Repo) -> Iterator[Tuple[str, str]]:
     reader = repo.config_reader()
     for section in reader.sections():
         if not section.startswith("uff "):
@@ -27,11 +30,11 @@ def read_git_config(repo):
         yield url, forge.lower()
 
 
-def load_config(repo):
+def load_config(repo: Repo) -> List[Converter]:
     lst = []
     dct = get_converter_classes_dict()
 
-    def add_forge(base_url, forge):
+    def add_forge(base_url: str, forge: str) -> None:
         try:
             converter_klass = dct[forge]
         except KeyError:

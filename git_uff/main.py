@@ -8,6 +8,7 @@ import argparse
 import sys
 
 from pathlib import Path
+from typing import Tuple, List
 
 from git import Repo
 
@@ -42,7 +43,9 @@ def get_repo_root(path: Path) -> Path:
     return path
 
 
-def find_converter(converters, repo) -> (Converter, str):
+def find_converter(converters: List[Converter], repo: Repo) -> Tuple[Converter, str]:
+    """Look for a converter matching one of the remotes of repo, returns a
+    tuple of the converter and the URL for the matching remote."""
     for remote in repo.remotes:
         for url in remote.urls:
             for converter in converters:
@@ -52,13 +55,13 @@ def find_converter(converters, repo) -> (Converter, str):
                     " Run `git uff --help` to learn how to fix this.")
 
 
-def get_epilog():
+def get_epilog() -> str:
     converter_names = get_converter_classes_dict()
     converter_list = ", ".join(sorted(converter_names))
     return EPILOG.format(converter_list=converter_list)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__,
         epilog=get_epilog(),

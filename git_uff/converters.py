@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 import re
 
+from typing import Dict, Type, Optional
+
 from urllib.parse import quote_plus
 from pathlib import Path
 
@@ -10,21 +12,23 @@ class Converter:
     """A Converter turns a local path into its matching forge URL.
 
     The conversion is done through two class variables:
-    - URL_TEMPLATE: can contain {base_url}, {project}, {branch}, {escaped_branch}, {path}
+    - URL_TEMPLATE: can contain {base_url}, {project}, {branch},
+      {escaped_branch}, {path}
     - LINE_SUFFIX: used when --line is present. It is appended to the template
     and can contain {line}
     """
     URL_TEMPLATE = ""
     LINE_SUFFIX = ""
 
-    def __init__(self, base_url):
+    def __init__(self, base_url: str):
         self.base_url = base_url
 
     def match(self, remote_url: str) -> bool:
         """Returns true if this remote URL matches this converter"""
         return self.base_url in remote_url
 
-    def run(self, remote_url: str, branch: str, path: Path, line: int = None) -> str:
+    def run(self, remote_url: str, branch: str, path: Path,
+            line: Optional[int] = None) -> str:
         """Returns the URL for the specified path"""
         dct = {
             "base_url": self.base_url,
@@ -65,7 +69,7 @@ class CGitConverter(Converter):
     LINE_SUFFIX = "#n{line}"
 
 
-def get_converter_classes_dict():
+def get_converter_classes_dict() -> Dict[str, Type[Converter]]:
     suffix = "Converter"
     dct = {}
     for name, symbol in globals().items():

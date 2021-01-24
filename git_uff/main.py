@@ -11,28 +11,26 @@ from pathlib import Path
 
 from git import Repo
 
-from git_uff import converters
-from git_uff.converters import Converter
+from git_uff.config import load_config
+from git_uff.converters import Converter, get_converter_classes_dict
+
+
+EPILOG = """
+New forges can be declared in git configuration. You can do so using
+`git config`, like this:
+
+    git config --global uff.<forge_base_url>.forge <forge>
+
+Where <forge> must be one of: {converter_list}.
+
+For example to declare that example.com uses GitLab:
+
+    git config --global uff.example.com.forge gitlab
+"""
 
 
 class ToolError(Exception):
     pass
-
-
-CONVERTERS = []
-
-
-def add_converter(converter_name, url):
-    converter_class = getattr(converters, f"{converter_name}Converter")
-    converter = converter_class(url)
-    CONVERTERS.append(converter)
-
-
-def load_config():
-    add_converter("GitHub", "github.com")
-    add_converter("GitLab", "invent.kde.org")
-    add_converter("SourceHut", "git.sr.ht")
-    add_converter("CGit", "git.zx2c4.com")
 
 
 def get_repo_root(path: Path) -> Path:
@@ -44,25 +42,33 @@ def get_repo_root(path: Path) -> Path:
     return path
 
 
-def find_converter(repo) -> (Converter, str):
+def find_converter(converters, repo) -> (Converter, str):
     for remote in repo.remotes:
         for url in remote.urls:
-            for converter in CONVERTERS:
+            for converter in converters:
                 if converter.match(url):
                     return converter, url
-    raise ToolError("Don't know how to get an URL for this repository")
+    raise ToolError("Don't know how to get an URL for this repository."
+                    " Run `git uff --help` to learn how to fix this.")
+
+
+def get_epilog():
+    converter_names = get_converter_classes_dict()
+    converter_list = ", ".join(sorted(converter_names))
+    return EPILOG.format(converter_list=converter_list)
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.description = __doc__
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        epilog=get_epilog(),
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
 
     parser.add_argument("path", help="File for which we want the URL")
     parser.add_argument("-l", "--line", type=int, help="Line to point to")
 
     args = parser.parse_args()
-
-    load_config()
 
     try:
         path = Path(args.path).resolve(strict=True)
@@ -73,7 +79,8 @@ def main():
     try:
         repo_root = get_repo_root(path)
         repo = Repo(repo_root)
-        converter, remote_url = find_converter(repo)
+        converters = load_config(repo)
+        converter, remote_url = find_converter(converters, repo)
         url = converter.run(remote_url, repo.active_branch.name,
                             path.relative_to(repo_root), args.line)
 

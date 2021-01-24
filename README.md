@@ -32,7 +32,16 @@ https://github.com/agateau/nanonote/blob/master/src/linux/nanonote.desktop#L10
 
 ## But my code is not on GitHub...
 
-`git-uff` is not tied to GitHub. It supports GitLab, SourceHut and a few others. For now the supported forges are hard-coded in the code, but making it configurable should be easy.
+`git-uff` is not tied to GitHub. It supports GitLab, SourceHut and CGit forges.
+
+To declare a new forge, add it to your git configuration with:
+
+    git config --global uff.<forge_base_url>.forge <forge>
+
+For example to declare that example.com uses GitLab:
+
+    git config --global uff.example.com.forge gitlab
+
 
 ## Installation
 

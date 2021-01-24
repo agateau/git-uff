@@ -63,3 +63,13 @@ class SourceHutConverter(Converter):
 class CGitConverter(Converter):
     URL_TEMPLATE = "https://{base_url}/{project}/tree/{path}?h={escaped_branch}"
     LINE_SUFFIX = "#n{line}"
+
+
+def get_converter_classes_dict():
+    suffix = "Converter"
+    dct = {}
+    for name, symbol in globals().items():
+        if name.endswith(suffix) and name != suffix:
+            name = name.replace(suffix, "").lower()
+            dct[name] = symbol
+    return dct

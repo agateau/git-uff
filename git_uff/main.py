@@ -69,6 +69,9 @@ def main() -> None:
     )
 
     parser.add_argument("path", help="File for which we want the URL")
+    parser.add_argument("-b", "--branch",
+                        help="Use branch BRANCH instead of the current one",
+                        metavar="BRANCH")
     parser.add_argument("-l", "--line", type=int, help="Line to point to")
 
     args = parser.parse_args()
@@ -84,7 +87,11 @@ def main() -> None:
         repo = Repo(repo_root)
         converters = load_config(repo)
         converter, remote_url = find_converter(converters, repo)
-        url = converter.run(remote_url, repo.active_branch.name,
+        if args.branch:
+            branch = args.branch
+        else:
+            branch = repo.active_branch.name
+        url = converter.run(remote_url, branch,
                             path.relative_to(repo_root), args.line)
 
         print(url)

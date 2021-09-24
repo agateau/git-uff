@@ -72,6 +72,9 @@ def main() -> None:
     parser.add_argument("-b", "--branch",
                         help="Use branch BRANCH instead of the current one",
                         metavar="BRANCH")
+    parser.add_argument("-c", "--commit", action="store_true",
+                        help="Replace the branch in the URL with the commit"
+                        " it points to")
     parser.add_argument("-l", "--line", type=int, help="Line to point to")
 
     args = parser.parse_args()
@@ -91,6 +94,8 @@ def main() -> None:
             branch = args.branch
         else:
             branch = repo.active_branch.name
+        if args.commit:
+            branch = repo.rev_parse(branch).hexsha
         url = converter.run(remote_url, branch,
                             path.relative_to(repo_root), args.line)
 

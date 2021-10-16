@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 from typing import Tuple, List
 
+import pyperclip
 from git import Repo
 
 from git_uff.config import load_config
@@ -75,6 +76,8 @@ def main() -> None:
     parser.add_argument("-p", "--permalink", action="store_true",
                         help="Replace the branch in the URL with the commit"
                         " it points to")
+    parser.add_argument("-c", "--copy", action="store_true",
+                        help="Copy the result to the clipboard")
     parser.add_argument("-l", "--line", type=int, help="Line to point to")
 
     args = parser.parse_args()
@@ -98,8 +101,9 @@ def main() -> None:
             branch = repo.rev_parse(branch).hexsha
         url = converter.run(remote_url, branch,
                             path.relative_to(repo_root), args.line)
-
         print(url)
+        if args.copy:
+            pyperclip.copy(url)
     except ToolError as e:
         print(e)
         sys.exit(1)

@@ -30,7 +30,46 @@ $ git uff src/linux/nanonote.desktop -l 10
 https://github.com/agateau/nanonote/blob/master/src/linux/nanonote.desktop#L10
 ```
 
-## But my code is not on GitHub...
+`git-uff` has a few other available options. Here is its `--help` output:
+
+<!-- [[[cog
+import subprocess
+result = subprocess.run(["git-uff", "--help"], capture_output=True, text=True)
+cog.outl("```")
+cog.out(result.stdout)
+cog.outl("```")
+]]]-->
+```
+usage: git-uff [-h] [-b BRANCH] [-p] [-c] [-l LINE] path
+
+Prints the forge URL for a given file or path of a Git repository checkout.
+
+positional arguments:
+  path                  File for which we want the URL
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -b BRANCH, --branch BRANCH
+                        Use branch BRANCH instead of the current one
+  -p, --permalink       Replace the branch in the URL with the commit it
+                        points to
+  -c, --copy            Copy the result to the clipboard
+  -l LINE, --line LINE  Line to point to
+
+New forges can be declared in git configuration. You can do so using
+`git config`, like this:
+
+    git config --global uff.<forge_base_url>.forge <forge>
+
+Where <forge> must be one of: cgit, github, gitlab, sourcehut.
+
+For example to declare that example.com uses GitLab:
+
+    git config --global uff.example.com.forge gitlab
+```
+<!--[[[end]]] -->
+
+## What if my code is not on GitHub?
 
 `git-uff` is not tied to GitHub. It supports GitLab, SourceHut and CGit forges.
 
@@ -42,10 +81,11 @@ For example to declare that example.com uses GitLab:
 
     git config --global uff.example.com.forge gitlab
 
+See the output of `git uff --help` for the valid `<forge>` values.
 
 ## Installation
 
-The recommended solution is to use [pipx][]:
+The recommended method to install `git-uff` is to use [pipx][]:
 
 ```
 pipx install git-uff

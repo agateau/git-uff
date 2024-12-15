@@ -1,10 +1,13 @@
 # Copyright 2021 Aurélien Gâteau <mail@agateau.com>
 # SPDX-License-Identifier: Apache-2.0
 import re
+import sys
 
 from typing import Dict, Type, Optional
 
+from urllib.error import HTTPError
 from urllib.parse import quote_plus
+from urllib.request import Request, urlopen
 from pathlib import Path
 
 
@@ -27,6 +30,16 @@ class Converter:
         """Returns true if this remote URL matches this converter"""
         return self.base_url in remote_url
 
+    @staticmethod
+    def check_existence(url):
+        req = Request(url, method='HEAD')
+        try:
+            with urlopen(req) as f:
+                pass
+        except HTTPError:
+            print(f'Not accessible URL: {url}')
+            sys.exit(1)
+
     def run(self, remote_url: str, branch: str, path: Path,
             line: Optional[int] = None) -> str:
         """Returns the URL for the specified path"""
@@ -41,6 +54,8 @@ class Converter:
         url = self.URL_TEMPLATE.format(**dct)
         if line is not None:
             url += self.LINE_SUFFIX.format(line=line)
+
+        self.check_existence(url)
         return url
 
     def get_project(self, remote_url: str) -> str:

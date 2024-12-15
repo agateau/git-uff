@@ -11,6 +11,18 @@ from urllib.request import Request, urlopen
 from pathlib import Path
 
 
+BUG_URL = "https://github.com/agateau/git-uff/issues/new"
+
+
+def check_existence(url: str) -> bool:
+    req = Request(url, method='HEAD')
+    try:
+        with urlopen(req) as f:
+            return True
+    except HTTPError:
+        return False
+
+
 class Converter:
     """A Converter turns a local path into its matching forge URL.
 
@@ -30,16 +42,6 @@ class Converter:
         """Returns true if this remote URL matches this converter"""
         return self.base_url in remote_url
 
-    @staticmethod
-    def check_existence(url):
-        req = Request(url, method='HEAD')
-        try:
-            with urlopen(req) as f:
-                pass
-        except HTTPError:
-            print(f'Not accessible URL: {url}')
-            sys.exit(1)
-
     def run(self, remote_url: str, branch: str, path: Path,
             line: Optional[int] = None) -> str:
         """Returns the URL for the specified path"""
@@ -55,7 +57,12 @@ class Converter:
         if line is not None:
             url += self.LINE_SUFFIX.format(line=line)
 
-        self.check_existence(url)
+        if not check_existence(url):
+            print(
+                f"URL {url} does not exist, maybe you have not pushed your changes yet?\n"
+                f"If you think this is a bug in git-uff, please report it on {BUG_URL}.",
+                file=sys.stderr)
+            sys.exit(1)
         return url
 
     def get_project(self, remote_url: str) -> str:

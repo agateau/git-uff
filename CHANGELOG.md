@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0 - 2025-01-21
+
+### Changed
+
+- Check for the existence of the URL to be reported (patch by Matěj Cepl).
+
 ## 0.3.0 - 2021-03-14
 
 ### Added

@@ -1,28 +1,36 @@
-[tool.poetry]
+[project]
 name = "git-uff"
 version = "0.4.0"
 description = "Prints the forge URL for a given file of a Git repository checkout"
+authors = [{ name = "Aurélien Gâteau", email = "mail@agateau.com" }]
+requires-python = ">=3.10,<4"
 readme = "README.md"
-authors = ["Aurélien Gâteau <mail@agateau.com>"]
-license = "Apache 2.0"
-homepage = "https://github.com/agateau/git-uff"
-repository = "https://github.com/agateau/git-uff"
+license = "Apache-2.0"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
-    "Intended Audience :: Developers"
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "gitpython>=3.1.12,<4",
+    "pyperclip>=1.8.2,<2",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.6"
-gitpython = "^3.1.12"
-pyperclip = "^1.8.2"
+[project.urls]
+Homepage = "https://github.com/agateau/git-uff"
+Repository = "https://github.com/agateau/git-uff"
 
-[tool.poetry.dev-dependencies]
-
-[tool.poetry.scripts]
+[project.scripts]
 git-uff = "git_uff.main:main"
 
+[dependency-groups]
+dev = []
+
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.10.7,<0.11.0"]
+build-backend = "uv_build"

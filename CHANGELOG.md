@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0 - 2026-03-05
+
+### Added
+
+- `git uff` learned the `--offline` option to skip the URL check.
+
 ## 0.4.0 - 2025-01-21
 
 ### Changed

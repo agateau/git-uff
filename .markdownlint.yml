@@ -1,0 +1,6 @@
+line_length: false
+
+fenced-code-language: false
+
+# Changelog files are full of duplicate headers
+no-duplicate-heading: false

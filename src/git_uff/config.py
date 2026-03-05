@@ -1,7 +1,6 @@
 # Copyright 2021 Aurélien Gâteau <mail@agateau.com>
 # SPDX-License-Identifier: Apache-2.0
 from configparser import NoOptionError
-from typing import Tuple, List
 from collections.abc import Iterator
 
 from git import Repo

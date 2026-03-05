@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 import re
 
-from typing import Dict, Type, Optional
 
 from urllib.error import URLError
 from urllib.parse import quote_plus
@@ -11,7 +10,7 @@ from pathlib import Path
 
 
 def check_url(url: str) -> bool:
-    req = Request(url, method='HEAD')
+    req = Request(url, method="HEAD")
     try:
         with urlopen(req):
             return True
@@ -28,6 +27,7 @@ class Converter:
     - LINE_SUFFIX: used when --line is present. It is appended to the template
     and can contain {line}
     """
+
     URL_TEMPLATE = ""
     LINE_SUFFIX = ""
 
@@ -38,8 +38,9 @@ class Converter:
         """Returns true if this remote URL matches this converter"""
         return self.base_url in remote_url
 
-    def run(self, remote_url: str, branch: str, path: Path,
-            line: int | None = None) -> str:
+    def run(
+        self, remote_url: str, branch: str, path: Path, line: int | None = None
+    ) -> str:
         """Returns the URL for the specified path"""
         dct = {
             "base_url": self.base_url,

@@ -75,11 +75,15 @@ For example to declare that example.com uses GitLab:
 
 To declare a new forge, add it to your git configuration with:
 
-    git config --global uff.<forge_base_url>.forge <forge>
+```
+git config --global uff.<forge_base_url>.forge <forge>
+```
 
 For example to declare that example.com uses GitLab:
 
-    git config --global uff.example.com.forge gitlab
+```
+git config --global uff.example.com.forge gitlab
+```
 
 See the output of `git uff --help` for the valid `<forge>` values.
 

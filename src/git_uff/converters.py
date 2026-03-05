@@ -39,7 +39,7 @@ class Converter:
         return self.base_url in remote_url
 
     def run(self, remote_url: str, branch: str, path: Path,
-            line: Optional[int] = None) -> str:
+            line: int | None = None) -> str:
         """Returns the URL for the specified path"""
         dct = {
             "base_url": self.base_url,
@@ -81,7 +81,7 @@ class CGitConverter(Converter):
     LINE_SUFFIX = "#n{line}"
 
 
-def get_converter_classes_dict() -> Dict[str, Type[Converter]]:
+def get_converter_classes_dict() -> dict[str, type[Converter]]:
     suffix = "Converter"
     dct = {}
     for name, symbol in globals().items():

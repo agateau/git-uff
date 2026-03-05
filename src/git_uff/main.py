@@ -47,7 +47,7 @@ def get_repo_root(path: Path) -> Path:
     return path
 
 
-def find_converter(converters: List[Converter], repo: Repo) -> Tuple[Converter, str]:
+def find_converter(converters: list[Converter], repo: Repo) -> tuple[Converter, str]:
     """Look for a converter matching one of the remotes of repo, returns a
     tuple of the converter and the URL for the matching remote."""
     for remote in repo.remotes:

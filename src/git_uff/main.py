@@ -100,8 +100,7 @@ def main() -> None:
     try:
         path = Path(args.path).resolve(strict=True)
     except FileNotFoundError:
-        print(f"File '{args.path}' does not exist")
-        sys.exit(1)
+        sys.exit(f"File '{args.path}' does not exist")
 
     try:
         repo_root = get_repo_root(path)
@@ -126,8 +125,7 @@ def main() -> None:
         if args.copy:
             pyperclip.copy(url)
     except ToolError as e:
-        print(e)
-        sys.exit(1)
+        sys.exit(e)
 
 
 if __name__ == "__main__":

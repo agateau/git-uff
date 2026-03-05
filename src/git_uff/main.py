@@ -14,7 +14,7 @@ import pyperclip
 from git import Repo
 
 from git_uff.config import load_config
-from git_uff.converters import Converter, get_converter_classes_dict
+from git_uff.converters import Converter, get_converter_classes_dict, check_url
 
 
 EPILOG = """
@@ -29,6 +29,9 @@ For example to declare that example.com uses GitLab:
 
     git config --global uff.example.com.forge gitlab
 """
+
+
+BUG_URL = "https://github.com/agateau/git-uff/issues/new"
 
 
 class ToolError(Exception):
@@ -79,6 +82,8 @@ def main() -> None:
     parser.add_argument("-c", "--copy", action="store_true",
                         help="Copy the result to the clipboard")
     parser.add_argument("-l", "--line", type=int, help="Line to point to")
+    parser.add_argument("--offline", action="store_true",
+                        help="Do not check if the URL is valid")
 
     args = parser.parse_args()
 
@@ -99,8 +104,15 @@ def main() -> None:
             branch = repo.active_branch.name
         if args.permalink:
             branch = repo.rev_parse(branch).hexsha
+
         url = converter.run(remote_url, branch,
                             path.relative_to(repo_root), args.line)
+
+        if not args.offline and not check_url(url):
+            sys.exit(
+                f"URL {url} does not exist, maybe you have not pushed your changes yet?\n"
+                f"If you think this is a bug in git-uff, please report it on {BUG_URL}."
+            )
         print(url)
         if args.copy:
             pyperclip.copy(url)

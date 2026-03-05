@@ -95,13 +95,14 @@ The recommended method to install `git-uff` is to use [pipx][]:
 pipx install git-uff
 ```
 
+or [uv][]:
+
+```
+uv tool install git-uff
+```
+
 [pipx]: https://github.com/pipxproject/pipx
-
-But you can also install it with `pip`:
-
-```
-pip install --user git-uff
-```
+[uv]: https://docs.astral.sh/uv/
 
 ## License
 
